@@ -1,7 +1,17 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
-./build.sh
+
+
+target=build
+rm -rf $target
+mkdir -p $target
+
+spring jar $target/service.jar service.groovy
+cp run.sh $target
+
+docker build -t bootiful-docker .
+
 
 project_name=bootiful-docker
 
