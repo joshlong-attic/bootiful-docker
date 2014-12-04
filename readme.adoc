@@ -2,6 +2,7 @@
 
 :todo: figure out what the correct way to refer to CF/Diego/Lattice is
 :todo:
+:bootiful-project: bootiful-docker
 
 NOTE: I borrowed some examples from http://plainoldobjects.com/2014/11/16/deploying-spring-boot-based-microservices-with-docker[my friend Chris Richardson's much more in-depth blog on running Spring Boot applications with Docker]. Thanks for the wisdom, Chris!
 
@@ -53,16 +54,16 @@ It's easy enough to build a local Docker image.
 include::build.sh[]
 ----
 
-This simply stages a working directory and then creates a local _image_. The image name is `bootiful_cf`. You can then run it by that handle: `docker run -p 8080:8080 bootiful_cf`. The `-p` argument is what maps the _guest_'s port `8080` to the _host_'s `8080`. In another shell, you can see the running process by issuing `docker ps`. Bring the application up in your browser by visiting the host of the running Docker image. If you're running on Linux it'll be your localhost. If you're on an alternative host operating system then you might be using something like Boot2Docker which in effect runs Docker _inside_ of a Linux virtual machine (powered by VirtualBox), so remember to note down the host on which that's running. On my machine, the application is now available on `http://192.168.59.103:8080/hello`.
+This simply stages a working directory and then creates a local _image_. The image name is `{bootiful-project}`. You can then run it by that handle: `docker run -p 8080:8080 {bootiful-project}`. The `-p` argument is what maps the _guest_'s port `8080` to the _host_'s `8080`. In another shell, you can see the running process by issuing `docker ps`. Bring the application up in your browser by visiting the host of the running Docker image. If you're running on Linux it'll be your localhost. If you're on an alternative host operating system then you might be using something like Boot2Docker which in effect runs Docker _inside_ of a Linux virtual machine (powered by VirtualBox), so remember to note down the host on which that's running. On my machine, the application is now available on `http://192.168.59.103:8080/hello`.
 
 ## Taking Our Application to the Cloud with Lattice/Diego/CF
 
 You'll need a Docker registry to host your Docker image, first. There are some good, open-source, private Docker registries and https://blog.codecentric.de/en/2014/02/docker-registry-run-private-docker-image-repository/[it's easy enough to instal them].  For our purposes, however, we'll just use Dockerhub which lets you host as many images as you want (if they're public; private repositories cost money).
 
-Create an account if you don't already have one and create a new repository. In my case, I named the repository `bootiful_cf`.
+Create an account if you don't already have one and create a new repository. In my case, I named the repository `{bootiful-project}`.
 
-Then, we need to tie the local image to the remote repository on Dockerhub. The easiest way to do that is to _tag_ the image, like this:`docker tag bootiful_cf starbuxman/bootiful_cf`. My user is `starbuxman` and I want to link my local image (`bootiful_cf`) to the remote user (`starbuxman`) and remote repository (also called `bootiful_cf`, but it doesn't have to be).
+Then, we need to tie the local image to the remote repository on Dockerhub. The easiest way to do that is to _tag_ the image, like this:`docker tag {bootiful-project} starbuxman/{bootiful-project}`. My user is `starbuxman` and I want to link my local image (`{bootiful-project}`) to the remote user (`starbuxman`) and remote repository (also called `{bootiful-project}`, but it doesn't have to be).
 
-Once that's done, it's dead simple to  upload it: `docker push starbuxman/bootiful_cf`.
+Once that's done, it's dead simple to  upload it: `docker push starbuxman/{bootiful-project}`.
 
-Now you can run it with `diego-edge-cli start lattice-app -i "docker:///starbuxman/bootiful_cf" -c "/data/run.sh" `.
+Now you can run it with `diego-edge-cli start lattice-app -i "docker:///starbuxman/{bootiful-project}" -c "/data/run.sh"`.
