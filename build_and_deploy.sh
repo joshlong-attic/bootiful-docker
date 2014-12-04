@@ -3,6 +3,8 @@ set -e
 
 ./build.sh
 
-docker push starbuxman/bootiful_lattice
+project_name=bootiful-docker
 
-diego-edge-cli start bootiful_lattice -i "docker:///starbuxman/bootiful_lattice" -c "/run.sh"
+docker tag $project_name starbuxman/$project_name
+docker push starbuxman/$project_name
+diego-edge-cli start $project_name -i "docker:///starbuxman/$project_name" -c "/run.sh"

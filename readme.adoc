@@ -1,7 +1,7 @@
 # A "Bootiful" Docker Application
 
 :todo: figure out what the correct way to refer to CF/Diego/Lattice is
-:todo: 
+:todo:
 
 NOTE: I borrowed some examples from http://plainoldobjects.com/2014/11/16/deploying-spring-boot-based-microservices-with-docker[my friend Chris Richardson's much more in-depth blog on running Spring Boot applications with Docker]. Thanks for the wisdom, Chris!
 
@@ -22,7 +22,7 @@ Here's a http://spring.io/projects/spring-boot[simple Spring Boot CLI applicatio
 .A simple REST service  `service.groovy`
 [source,groovy]
 ----
-include::example/service.groovy[]
+include::service.groovy[]
 ----
 
 You can easily run this application on your local machine using `spring run service.groovy`. This of course requires that you have the `spring` command-line tool on the local environment, as well as a JDK. To simplify matters a bit, let's turn the service into a regular Java `.jar`: `spring jar service.jar service.groovy`. You should now be able to run the service using just `java`: `java -jar service.jar`.
@@ -37,7 +37,7 @@ The first thing we need to do is provide a `Dockerfile`. Our `Dockerfile` is str
 .`Dockerfile`
 [source,text]
 ----
-include::example/Dockerfile[]
+include::Dockerfile[]
 ----
 
 Docker is runs _images_ (a logical notion of an operating system and an environment) inside of _containers_. An image is made of _layers_. Docker images can _reuse_ other Docker images and treat them as a _base_ on which other specializations may be made. Our application will run on an Ubuntu Linux environment that has Oracle's Java 8 SDK installed on it. We don't need to respecify that every time. Instead, we can lean on existing images in a Docker registry (the central and default is http://dockerhub.com[Dockerhub.com]) and then only specify that which is unique to our application. Our application uses the image named `oracle-java8` from the user named `java`. This is one of the keys to the power of Docker: layers may be shared and reused. They can be _composed_ and _linked_ to each other.
@@ -50,7 +50,7 @@ It's easy enough to build a local Docker image.
 .`build.sh`
 [source,text]
 ----
-include::example/build.sh[]
+include::build.sh[]
 ----
 
 This simply stages a working directory and then creates a local _image_. The image name is `bootiful_cf`. You can then run it by that handle: `docker run -p 8080:8080 bootiful_cf`. The `-p` argument is what maps the _guest_'s port `8080` to the _host_'s `8080`. In another shell, you can see the running process by issuing `docker ps`. Bring the application up in your browser by visiting the host of the running Docker image. If you're running on Linux it'll be your localhost. If you're on an alternative host operating system then you might be using something like Boot2Docker which in effect runs Docker _inside_ of a Linux virtual machine (powered by VirtualBox), so remember to note down the host on which that's running. On my machine, the application is now available on `http://192.168.59.103:8080/hello`.

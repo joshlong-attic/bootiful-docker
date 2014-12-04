@@ -11,4 +11,4 @@ cp service.jar $target
 cp run.sh $target
 
 
-docker build -t bootiful_lattice .
+docker build -t bootiful-docker .
