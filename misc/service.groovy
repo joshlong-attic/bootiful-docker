@@ -11,4 +11,10 @@ class GreetingsRestController {
   def hi(){
     hi("World")
   }
+
+  @RequestMapping("/killme")
+  def goodbye(){
+    System.out.println( 'goodbye cruel world!')
+    System.exit( -1 )
+  }
 }
