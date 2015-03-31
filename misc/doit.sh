@@ -15,6 +15,6 @@ docker build -t bootiful-docker .
 
 project_name=bootiful-docker
 
-docker tag $project_name starbuxman/$project_name
+docker tag -f $project_name starbuxman/$project_name
 docker push starbuxman/$project_name
 ltc start $project_name -i "docker:///starbuxman/$project_name" -c "/run.sh"
