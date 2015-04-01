@@ -2,11 +2,14 @@
 
 :todo: figure out what the correct way to refer to CF/Diego/Lattice is
 :todo:
-:bootiful-project: bootiful-docker
+:bootiful-docker: bootiful-docker
 
 NOTE: I borrowed some examples from http://plainoldobjects.com/2014/11/16/deploying-spring-boot-based-microservices-with-docker[my friend Chris Richardson's much more in-depth blog on running Spring Boot applications with Docker]. Thanks for the wisdom, Chris!
 
-Agility is key in today's market. Applications today need to (ahem, pardon the pun) _pivot_ on a dime. Agility informs the application development process in many ways. Applications should be small, and singly focused, so that they can be updated independant of other components in a larger system. This makes it easier to develop, deploy and iterate. Applications should also enjoy repeatable, automated, and consistent builds. There should be no friction in going from a developer's workstation to a production environment, as often as possible. (Some organizations do this many times a day, for their employee's first day, even!) Applications that externalize environment specific configuration (in environment variables, for example) are easy to move from one environment to another: it becomes a simple  matter of taking a single build and then changing the externalized configuration. This principle is well articulated http://12factor.net/config[in the 12factor apps manifesto]. Spring, of course, has always been optimized for this style of application development.
+Agility is key in today's market. Applications today need to (ahem, pardon the pun) _pivot_ on a dime. Agility informs the application development process in many ways. Applications should be small, and singly focused, so that they can be updated independant of other components in a larger system. This makes it easier to develop, deploy and iterate. Applications should also enjoy repeatable, automated, and consistent builds. There should be no friction in going from a developer's workstation to a production environment, as often as possible. (Some organizations do this many times a day, for their employee's first day, even!)
+
+There are many ways to build portable, reproducible applications. Spring natively supports the 12-factor app style recommendations  like those for [backing services](https://spring.io/blog/2015/01/27/12-factor-app-style-backing-services-with-spring-and-cloud-foundry) and [externalized configuration](https://spring.io/blog/2015/01/13/configuring-it-all-out-or-12-factor-app-style-configuration-with-spring).
+
 
 There is, however, a gap in the story, if we stop here: how do we keep the environment in which an application itself runs consistent? An application-centric cloud (like a   Platform-as-a-Service) offers a consistent approach to describing and provisioning applications. For the longest time, Pivotal's Cloud Foundry supported easy description of applications using a `manifest.yml`. This manifest _declaratively_  describes the makeup of the application and the system resources (RAM, network ports, etc.) needed by the application.
 
@@ -54,16 +57,16 @@ It's easy enough to build a local Docker image.
 include::build.sh[]
 ----
 
-This simply stages a working directory and then creates a local _image_. The image name is `{bootiful-project}`. You can then run it by that handle: `docker run -p 8080:8080 {bootiful-project}`. The `-p` argument is what maps the _guest_'s port `8080` to the _host_'s `8080`. In another shell, you can see the running process by issuing `docker ps`. Bring the application up in your browser by visiting the host of the running Docker image. If you're running on Linux it'll be your localhost. If you're on an alternative host operating system then you might be using something like Boot2Docker which in effect runs Docker _inside_ of a Linux virtual machine (powered by VirtualBox), so remember to note down the host on which that's running. On my machine, the application is now available on `http://192.168.59.103:8080/hello`.
+This simply stages a working directory and then creates a local _image_. The image name is `bootiful-docker`. You can then run it by that handle: `docker run -p 8080:8080 bootiful-docker`. The `-p` argument is what maps the _guest_'s port `8080` to the _host_'s `8080`. In another shell, you can see the running process by issuing `docker ps`. Bring the application up in your browser by visiting the host of the running Docker image. If you're running on Linux it'll be your localhost. If you're on an alternative host operating system then you might be using something like Boot2Docker which in effect runs Docker _inside_ of a Linux virtual machine (powered by VirtualBox), so remember to note down the host on which that's running. On my machine, the application is now available on `http://192.168.59.103:8080/hello`.
 
 ## Taking Our Application to the Cloud with Lattice/Diego/CF
 
 You'll need a Docker registry to host your Docker image, first. There are some good, open-source, private Docker registries and https://blog.codecentric.de/en/2014/02/docker-registry-run-private-docker-image-repository/[it's easy enough to instal them].  For our purposes, however, we'll just use Dockerhub which lets you host as many images as you want (if they're public; private repositories cost money).
 
-Create an account if you don't already have one and create a new repository. In my case, I named the repository `{bootiful-project}`.
+Create an account if you don't already have one and create a new repository. In my case, I named the repository `bootiful-docker`.
 
-Then, we need to tie the local image to the remote repository on Dockerhub. The easiest way to do that is to _tag_ the image, like this:`docker tag {bootiful-project} starbuxman/{bootiful-project}`. My user is `starbuxman` and I want to link my local image (`{bootiful-project}`) to the remote user (`starbuxman`) and remote repository (also called `{bootiful-project}`, but it doesn't have to be).
+Then, we need to tie the local image to the remote repository on Dockerhub. The easiest way to do that is to _tag_ the image, like this:`docker tag bootiful-docker starbuxman/bootiful-docker`. My user is `starbuxman` and I want to link my local image (`bootiful-docker`) to the remote user (`starbuxman`) and remote repository (also called `bootiful-docker`, but it doesn't have to be).
 
-Once that's done, it's dead simple to  upload it: `docker push starbuxman/{bootiful-project}`.
+Once that's done, it's dead simple to  upload it: `docker push starbuxman/bootiful-docker`.
 
-Now you can run it with `diego-edge-cli start lattice-app -i "docker:///starbuxman/{bootiful-project}" -c "/data/run.sh"`.
+Now you can run it with `diego-edge-cli start lattice-app -i "docker:///starbuxman/bootiful-docker" -c "/data/run.sh"`.
