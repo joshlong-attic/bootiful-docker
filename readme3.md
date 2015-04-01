@@ -115,3 +115,18 @@ build_docker_image build bootiful-docker starbuxman
 I can now easily point Lattice to my deployed Docker image (`starbuxman/bootiful-docker`).
 
 ### Deploying to Lattice
+Make sure that [Lattice is up and running](http://lattice.cf/docs/getting-started/) and that you have the `ltc` CLI installed.
+
+```bash
+function deploy_to_lattice(){
+  app=$1
+
+  ltc rm $APP
+  ltc create $APP starbuxman/$APP -- /run.sh
+  ltc scale $app 5
+
+  ltc list
+  ltc status $app
+
+}
+```
