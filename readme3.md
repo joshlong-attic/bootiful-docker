@@ -8,7 +8,7 @@ As developers, we're used to being able to test applications in isolation, to va
 
 ## Cattle
 
-It took us developers a while to get to this place, but we did. In the last 8 years we've seen this rigor come to operations teams. Operations want reproducible infrastructure as much as we developers want reproducible builds. Consistency and reproducibility are even more important with disposable, ephemeral, cloud infrastructure. As Adrian Cochraft (formerly at Netflix) reminds us: treat servers like cattle, not pets.
+It took us developers a while to get to this place, but we did. In the last 8 years we've seen this rigor come to operations teams. Operations want reproducible infrastructure as much as we developers want reproducible builds. Consistency and reproducibility are even more important with disposable, ephemeral, cloud infrastructure. As Adrian Cockcroft (formerly at Netflix) reminds us: treat servers like cattle, not pets.
 
 It's 2015, things have come a long way. Developers and operations are - ideally at least - two highly integrated teams. Developers want consistency in the way their applications run, operations want consistency in their infrastructure.  
 
