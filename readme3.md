@@ -2,7 +2,7 @@
 
 ## Portable Applications
 
-Spring's always made building portable applications as simple as possible. The very idea of dependency injection  provides the crucial bit of indirection required to insulate an application from an underlying platform, and there are numerous patterns that promote cloud-ready, portable, and movable applications. The [12 Factor App](http:/12factor.net) manifesto prescribes many good recommendations. We've even covered some of them, like  [backing services](https://spring.io/blog/2015/01/27/12-factor-app-style-backing-services-with-spring-and-cloud-foundry) and [externalized configuration](https://spring.io/blog/2015/01/13/configuring-it-all-out-or-12-factor-app-style-configuration-with-spring), in this very space recently.
+Spring has always tried to make application portability as easy as possible. It supports good design patterns such as those prescribed by the [12 Factor App](http:/12factor.net) manifesto. We've even covered some of them, like  [backing services](https://spring.io/blog/2015/01/27/12-factor-app-style-backing-services-with-spring-and-cloud-foundry) and [externalized configuration](https://spring.io/blog/2015/01/13/configuring-it-all-out-or-12-factor-app-style-configuration-with-spring), in this very space recently.
 
 As developers, we're used to being able to test applications in isolation, to validate the inputs into an application and validate the resulting behavior.  We're used to reproducible builds; we're used to being able to throw away the build and - with the disciplined use of tags and so on - reproduce the same build. This isn't news.
 
@@ -132,3 +132,9 @@ function deploy_to_lattice(){
 ```
 
 This function removes the existing app, if it's available, creates a new one (in this case, named `bootiful-docker`), then scales that application to have 5 concurrent running instances. Finally, `ltc list` is sort of like `ps aux` for Lattice. `ltc status` gives specific information about our deployed application.
+
+Use it as follows:
+
+```bash
+deploy_to_lattice starbuxman bootiful-docker
+```
