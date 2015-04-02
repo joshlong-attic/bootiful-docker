@@ -6,7 +6,7 @@ export BUILD_TARGET=build
 export APP=bootiful-docker
 
 
-alias ltc=$HOME/bin/ltc
+
 
 function clean(){
   curdir=`dirname $0`
@@ -32,19 +32,20 @@ function build_docker_image(){
 
 
 function deploy_to_lattice(){
+  export PATH=$PATH:$HOME/bin/ltc
+  alias ltc=$HOME/bin/ltc
   app=$2
   user=$1
 
-  ltc rm $APP
-  ltc create $APP $user/$APP -- /run.sh
+  ltc rm $app
+  ltc create $app $user/$app -- /run.sh
   ltc scale $app 5
 
   ltc list
   ltc status $app
-
 }
 
 
-clean $BUILD_TARGET
-build_docker_image $BUILD_TARGET starbuxman $APP
-# deploy_to_lattice starbuxman $APP
+#clean $BUILD_TARGET
+#build_docker_image $BUILD_TARGET starbuxman $APP
+deploy_to_lattice starbuxman $APP

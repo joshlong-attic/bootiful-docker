@@ -96,11 +96,11 @@ With all of this in place, we can build and deploy a Docker image. To keep thing
 ```bash
 function build_docker_image(){
   curdir=`dirname $0`
-  target=$1
-  app=$2
-  user=$3
+  target=$curdir/$1
+  app=$3
+  user=$2
   cp $curdir/run.sh $target
-  docker build -t $app .
+  docker build -t $app $curdir
   docker tag -f $app $user/$app
   docker push $user/$app
 }
@@ -115,18 +115,20 @@ build_docker_image build bootiful-docker starbuxman
 I can now easily point Lattice to my deployed Docker image (`starbuxman/bootiful-docker`).
 
 ### Deploying to Lattice
-Make sure that [Lattice is up and running](http://lattice.cf/docs/getting-started/) and that you have the `ltc` CLI installed.
+Make sure that [Lattice is up and running](http://lattice.cf/docs/getting-started/) and that you have the `ltc` CLI installed. The following Bash function will deploy your container to Lattice, make sure there are 5 instances of the application running, and then show informaion related to what applications are runninng (a bit like `ps aux`) and then show specific state for our application.
 
 ```bash
 function deploy_to_lattice(){
-  app=$1
+  app=$2
+  user=$1
 
   ltc rm $APP
-  ltc create $APP starbuxman/$APP -- /run.sh
+  ltc create $APP $user/$APP -- /run.sh
   ltc scale $app 5
 
   ltc list
   ltc status $app
-
 }
 ```
+
+This function removes the existing app, if it's available, creates a new one (in this case, named `bootiful-docker`), then scales that application to have 5 concurrent running instances. Finally, `ltc list` is sort of like `ps aux` for Lattice. `ltc status` gives specific information about our deployed application.
