@@ -5,9 +5,6 @@ set -e
 export BUILD_TARGET=build
 export APP=bootiful-docker
 
-
-
-
 function clean(){
   curdir=`dirname $0`
   echo "curdir is $curdir."
@@ -49,3 +46,7 @@ function deploy_to_lattice(){
 #clean $BUILD_TARGET
 #build_docker_image $BUILD_TARGET starbuxman $APP
 deploy_to_lattice starbuxman $APP
+
+## TODO
+ltc create --run-as-root $APP-redis redis
+ltc create --run-as-root $APP-mongo mongo

@@ -124,17 +124,31 @@ function deploy_to_lattice(){
 
   ltc rm $APP
   ltc create $APP $user/$APP -- /run.sh
-  ltc scale $app 5
+  ltc scale $app 2
 
   ltc list
   ltc status $app
 }
 ```
 
-This function removes the existing app, if it's available, creates a new one (in this case, named `bootiful-docker`), then scales that application to have 5 concurrent running instances. Finally, `ltc list` is sort of like `ps aux` for Lattice. `ltc status` gives specific information about our deployed application.
+This function removes the existing app, if it's available, creates a new one (in this case, named `bootiful-docker`), then scales that application to have 5 concurrent running instances. Finally, `ltc list` is sort of like `ps aux` for Lattice - it'll display all the running processes. `ltc status` gives specific information about our deployed application.
 
 Use it as follows:
 
 ```bash
 deploy_to_lattice starbuxman bootiful-docker
 ```
+
+You'll see output on the shell confirming that the application has been run, like this:
+
+```bash
+~/D/b/simple-example git:experiment ❯❯❯ ltc list                                                                                                     ✱
+App Name			Instances	DiskMB		MemoryMB	Route
+bootiful-docker			2/2		1024		128		bootiful-docker.192.168.11.11.xip.io, bootiful-docker-8080.192.168.11.11.xip.io => 8080
+..
+```
+
+Visit `http://bootiful-docker.192.168.11.11.xip.io/hello/Lattice` to see the output of the REST endpoint. Visit `http://bootiful-docker.192.168.11.11.xip.io/env` (which comes from Spring Boot's Actuator module) to see the enumeration of the environment in which the application's running. Finally, visit http://bootiful-docker.192.168.11.11.xip.io/killme`
+ to kill an instance. This will cause an instance of the application to exit. Lattice will immediately restart the instance. If you cause an instance of lattice-app to exit repeatedly Lattice will eventually start applying a backoff policy and restart the instance only after increasing intervals of time (30s, 60s, etc..).
+
+ 
