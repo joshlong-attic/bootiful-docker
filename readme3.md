@@ -14,7 +14,7 @@ It's 2015, things have come a long way. Developers and operations are - ideally 
 
 ## Deploy Containers
 
-[Linux Containers, or _LXC_](http://wikipedia.com/wiki/LXC), are a set of features in the Linux kernel designed to isolate applications. Applications run as though they've got the run of the kernel. LXC aren't, then, a single API or feature, but a set of independant ones that can be used together.  Container technologies like Docker and Rocket leverage LXC features and let you control them declaratively. Using Docker, for example, you can write a Dockerfile, check it into your code and then use that Docker file and code to reproduce both the application and its environment, and do so at a much lower runtime footprint than traditional virtualization. This makes things simpler: operations deploy containers, not applications.
+[Linux Containers, or _LXC_](http://wikipedia.com/wiki/LXC), are a set of features in the Linux kernel designed to isolate applications. Applications run as though they've got the run of the kernel. LXC aren't, then, a single API or feature, but a set of independant ones that can be used together.  Container technologies like Docker and Rocket leverage LXC features and let you control them declaratively. Using Docker, for example, you can write a Dockerfile, check it into your code and then use that Docker file and code to reproduce both the application and its environment, and do so at a much lower runtime footprint than traditional virtualization. This makes things simpler: operations deploy containers, not applications. To learn more about [using Spring Boot and Docker, check out this handy guide](https://spring.io/guides/gs/spring-boot-docker/).
 
 The only thing that remains, then, is automation around managing, running and scaling containerized workloads. This is where a distributed runtime like [Lattice](http://lattice.cf) comes in. From the site:
 
@@ -151,4 +151,60 @@ bootiful-docker			2/2		1024		128		bootiful-docker.192.168.11.11.xip.io, bootiful
 Visit `http://bootiful-docker.192.168.11.11.xip.io/hello/Lattice` to see the output of the REST endpoint. Visit `http://bootiful-docker.192.168.11.11.xip.io/env` (which comes from Spring Boot's Actuator module) to see the enumeration of the environment in which the application's running. Finally, visit http://bootiful-docker.192.168.11.11.xip.io/killme`
  to kill an instance. This will cause an instance of the application to exit. Lattice will immediately restart the instance. If you cause an instance of lattice-app to exit repeatedly Lattice will eventually start applying a backoff policy and restart the instance only after increasing intervals of time (30s, 60s, etc..).
 
- 
+The application has access to interesting environment variables like `CF_INSTANCE_IP`, `CF_INSTANCE_PORT`, which tell the running application the IP address and port used to address the containerized application from the outside. To learn more about this, [check out the docs on Lattice's environment](https://github.com/cloudfoundry-incubator/receptor/blob/master/doc/environment.md)
+
+### Deploying and Consuming a Backing Service with Lattice
+
+Thus far we've just deployed an HTTP service. Lattice handily supports all manner of containerized workloads. It's worth noting that the routes don't work for non HTTP traffic. Only TCP. If you want to to talk to a node, you'll need to use its IP address, directly. You can retreive the IP using the aforementioned environment variables, or just use `ltc status $APP_NAME`.
+
+
+Let's standup PostgreSQL. There are any number of readily available, containerized infrastructure available for the taking on Docker Hub. Just find one and then deploy it to Lattice, like this:
+
+```bash
+ltc create --run-as-root bootiful-docker-postgres postgres
+```
+This will launch the [PostgreSQL Docker image](https://registry.hub.docker.com/_/postgres/) from Docker Hub. You can customize the running PostgreSQL instance by passing in environment variables, like this:
+
+```bash
+ltc create --run-as-root --env "POSTGRES_PASSWORD=pw" bds postgres
+```
+
+On my machine, `ltc status` yeilded the following:
+
+```bash
+~ ❯❯❯ ltc status bootiful-docker-postgres
+================================================================================
+      bootiful-docker-postgres
+--------------------------------------------------------------------------------
+Instances	1/1
+Stack		lucid64
+Start Timeout	0
+DiskMB		1024
+MemoryMB	128
+CPUWeight	100
+Ports		  5432
+Routes		bootiful-docker-postgres.192.168.11.11.xip.io => 5432
+		      bootiful-docker-postgres-5432.192.168.11.11.xip.io => 5432
+--------------------------------------------------------------------------------
+Environment
+
+POSTGRES_PASSWORD="pw"
+PORT="5432"
+
+================================================================================
+      Instance 0  [RUNNING]
+--------------------------------------------------------------------------------
+InstanceGuid	5b6e33a5-79f1-4311-4a2c-ba7108063fb1
+Cell ID		lattice-cell-01
+Ip		192.168.11.11
+Port Mapping	61002:5432
+Since		2015-04-03 10:57:48 (PDT)
+Crash Count 	0
+--------------------------------------------------------------------------------
+
+```
+
+I could then access the PostgreSQL instance like this:
+```bash
+psql -U postgres -h 192.168.11.11 -p 61002 postgres
+```
